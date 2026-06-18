@@ -677,6 +677,7 @@ function enterSite(){
 // language picked from the very first overlay
 function pickLang(lang){
   setLang(lang);
+  music.start();   // la musica parte già qui, sul menu di scelta lingua
   // swap from lang screen to enter screen
   document.getElementById('lang-choose').style.display='none';
   document.getElementById('lang-enter').style.display='block';

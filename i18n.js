@@ -2,7 +2,7 @@
 const I18N = {
   it:{
     // enter overlay
-    enter_sub:"TRIVIA · Central Perk Edition",
+    enter_sub:"TRIVIA · FAN MADE",
     enter_btn:"▶ Entra a Central Perk",
     enter_hint:"🎵 con musica · tocca per iniziare",
     // home
@@ -125,7 +125,7 @@ const I18N = {
     modal_close:"Ho capito",
   },
   en:{
-    enter_sub:"TRIVIA · Central Perk Edition",
+    enter_sub:"TRIVIA · FAN MADE",
     enter_btn:"▶ Enter Central Perk",
     enter_hint:"🎵 with music · tap to start",
     quote:'"How you doin\'?"',
