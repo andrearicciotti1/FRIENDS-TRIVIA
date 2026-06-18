@@ -12,14 +12,27 @@
 <div class="grain"></div>
 <div class="flash" id="flash"></div>
 
-<!-- ════════ ENTER OVERLAY (per avviare la musica) ════════ -->
-<div class="enter-overlay" id="enter-overlay" onclick="enterSite()">
+<!-- ════════ LANG + ENTER OVERLAY ════════ -->
+<div class="enter-overlay" id="lang-overlay">
   <div class="enter-inner">
     <div class="enter-cup">☕</div>
     <div class="enter-title">FRIENDS</div>
-    <div class="enter-sub">TRIVIA · Central Perk Edition</div>
-    <button class="enter-btn">▶ Entra a Central Perk</button>
-    <div class="enter-hint">🎵 con musica · tocca per iniziare</div>
+    <div class="enter-sub" id="enter-sub">TRIVIA · Central Perk Edition</div>
+
+    <!-- step 1: choose language -->
+    <div id="lang-choose">
+      <div class="lang-q">Scegli la lingua · Choose your language</div>
+      <div class="lang-row">
+        <button class="lang-pick" onclick="pickLang('it')">🇮🇹 <span>Italiano</span></button>
+        <button class="lang-pick" onclick="pickLang('en')">🇬🇧 <span>English</span></button>
+      </div>
+    </div>
+
+    <!-- step 2: enter (with music) -->
+    <div id="lang-enter" style="display:none">
+      <button class="enter-btn" onclick="enterSite()"><span id="enter-btn-txt">▶ Entra a Central Perk</span></button>
+      <div class="enter-hint" id="enter-hint">🎵 con musica · tocca per iniziare</div>
+    </div>
   </div>
 </div>
 
@@ -34,13 +47,19 @@
       <div class="logo-tag">Central Perk Edition</div>
     </div>
 
-    <div class="quote-card">
-      <div class="q">"How you doin'?"</div>
-      <div class="by">— Joey Tribbiani</div>
+    <!-- language toggle (small, top-right of home content) -->
+    <div class="lang-toggle">
+      <button class="lang-btn" data-lang="it" onclick="setLang('it')">🇮🇹</button>
+      <button class="lang-btn" data-lang="en" onclick="setLang('en')">🇬🇧</button>
     </div>
 
-    <h2 class="home-h2">Scegli il tuo livello</h2>
-    <p class="home-p">Quanto conosci il gruppo?</p>
+    <div class="quote-card">
+      <div class="q" id="quote-q">"How you doin'?"</div>
+      <div class="by" id="quote-by">— Joey Tribbiani</div>
+    </div>
+
+    <h2 class="home-h2" id="home-h2">Scegli il tuo livello</h2>
+    <p class="home-p" id="home-p">Quanto conosci il gruppo?</p>
 
     <div class="diff-grid" id="diff-grid"></div>
 
@@ -53,22 +72,19 @@
 
     <div style="margin:22px auto 0;max-width:520px">
       <div class="pool-box" style="background:rgba(0,0,0,.25);border-radius:10px;padding:14px 16px">
-        <h4 style="font-size:9px;letter-spacing:3px;color:var(--muted);font-weight:700;text-transform:uppercase;margin-bottom:8px">Domande disponibili</h4>
+        <h4 id="pool-title" style="font-size:9px;letter-spacing:3px;color:var(--muted);font-weight:700;text-transform:uppercase;margin-bottom:8px">Domande disponibili</h4>
         <div id="pool-stats"></div>
       </div>
     </div>
 
-    <p class="home-footer">
-      Un fan project — nessun diritto detenuto · <span class="disclaimer-trigger" onclick="showModal()">Note legali</span><br>
-      Fatto con ☕ a Roma
-    </p>
+    <p class="home-footer" id="home-footer"></p>
   </div>
 </section>
 
 <!-- ════════ GAME ════════ -->
 <section id="game" class="screen">
   <div class="g-head">
-    <button class="icon-btn" onclick="goHome()">‹ Esci</button>
+    <button class="icon-btn" onclick="goHome()" id="exit-btn">‹ Esci</button>
     <div class="diff-pill" id="g-diff-pill"></div>
     <div class="g-score" id="g-score">
       <span class="streak" id="streak" style="display:none">🔥 <span id="streak-n">0</span></span>
@@ -106,17 +122,17 @@
       <div class="res-pct" id="res-pct">0%</div>
       <div class="res-grade" id="res-grade"></div>
       <div class="res-stats">
-        <div class="res-stat"><div class="v" id="res-correct" style="color:#5cba6e">0</div><div class="l">Corrette</div></div>
-        <div class="res-stat"><div class="v" id="res-wrong" style="color:#e0594d">0</div><div class="l">Errori</div></div>
-        <div class="res-stat"><div class="v" id="res-streak" style="color:#e07a2b">0🔥</div><div class="l">Streak</div></div>
+        <div class="res-stat"><div class="v" id="res-correct" style="color:#5cba6e">0</div><div class="l" id="res-correct-l">Corrette</div></div>
+        <div class="res-stat"><div class="v" id="res-wrong" style="color:#e0594d">0</div><div class="l" id="res-wrong-l">Errori</div></div>
+        <div class="res-stat"><div class="v" id="res-streak" style="color:#e07a2b">0🔥</div><div class="l" id="res-streak-l">Streak</div></div>
       </div>
       <div class="res-actions">
         <button class="replay-btn" id="replay-btn" onclick="replay()">↻ Rigioca</button>
-        <button class="home-link" onclick="goHome()">Cambia difficoltà</button>
+        <button class="home-link" id="home-link" onclick="goHome()">Cambia difficoltà</button>
       </div>
     </div>
     <div class="res-right">
-      <div class="res-right-h"><h3>Review</h3><span id="review-meta" style="font-size:12px;color:var(--muted)"></span></div>
+      <div class="res-right-h"><h3 id="review-h">Review</h3><span id="review-meta" style="font-size:12px;color:var(--muted)"></span></div>
       <div class="review-list" id="review-list"></div>
     </div>
   </div>
@@ -124,12 +140,11 @@
 
 <!-- ════════ AUDIO PLAYER ════════ -->
 <div class="audio-ctl">
-  <button class="audio-btn" id="play-btn" onclick="music.toggle();music.updateBtn()" title="Play/Pausa">▶</button>
+  <button class="audio-btn" id="play-btn" onclick="music.toggle()" title="Play/Pausa">▶</button>
   <button class="audio-btn" id="mute-btn" onclick="music.mute()" title="Muto">🔊</button>
   <input class="vol" type="range" min="0" max="1" step="0.05" value="0.5" oninput="music.setVol(this.value)" title="Volume">
   <span class="audio-label">🎵 Central Perk</span>
 </div>
-<!-- METTI IL FILE: audio/theme.mp3 -->
 <audio id="bg-music" loop preload="auto">
   <source src="audio/theme.mp3" type="audio/mpeg">
   <source src="audio/theme.ogg" type="audio/ogg">
@@ -138,17 +153,14 @@
 <!-- ════════ DISCLAIMER ════════ -->
 <div class="modal-bg" id="modal">
   <div class="modal">
-    <h3>Note legali — Fan Project</h3>
-    <p>Questo è un <b>progetto amatoriale</b> creato da un fan, senza alcuno scopo di lucro.</p>
-    <p><b>Friends</b>, i suoi personaggi, dialoghi, immagini e marchi sono proprietà di <b>Warner Bros. Entertainment Inc.</b> e dei rispettivi titolari. Non detengo alcun diritto sul materiale originale.</p>
-    <p>Le immagini e le clip sono usate a solo scopo illustrativo e di intrattenimento per altri fan. L'eventuale musica di sottofondo è anch'essa proprietà dei rispettivi titolari.</p>
-    <p>Non c'è alcuna affiliazione, sponsorizzazione o approvazione ufficiale da parte di Warner Bros. o di chiunque sia coinvolto nella produzione di Friends.</p>
-    <p><b>Alla prima richiesta da parte dei legittimi titolari dei diritti, il contenuto verrà rimosso immediatamente.</b></p>
-    <button class="close-btn" onclick="hideModal()">Ho capito</button>
+    <h3 id="modal-title">Note legali — Fan Project</h3>
+    <div id="modal-body"></div>
+    <button class="close-btn" id="modal-close" onclick="hideModal()">Ho capito</button>
   </div>
 </div>
 
 <script src="data.js"></script>
+<script src="i18n.js"></script>
 <script src="app.js"></script>
 </body>
 </html>

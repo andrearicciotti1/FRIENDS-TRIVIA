@@ -1,45 +1,22 @@
 /* ════════════════════════════════════════════
-   FRIENDS TRIVIA — game logic
+   FRIENDS TRIVIA — game logic (IT/EN)
 ════════════════════════════════════════════ */
 
 const DIFFICULTIES = [
-  { id:'easy',   label:'Easy',   emoji:'☕', desc:'Per i fan occasionali',      color:'#4a9e5c', light:'rgba(74,158,92,.16)',  time:20, count:15 },
-  { id:'medium', label:'Medium', emoji:'🛋️', desc:"L'hai visto due volte",      color:'#e07a2b', light:'rgba(224,122,43,.16)', time:18, count:15 },
-  { id:'hard',   label:'Hard',   emoji:'🦎', desc:'Tutte le stagioni a memoria', color:'#c0392b', light:'rgba(192,57,43,.16)',  time:15, count:12 },
-  { id:'expert', label:'Expert', emoji:'📺', desc:'Hai memorizzato lo show',     color:'#7b5ea7', light:'rgba(123,94,167,.16)', time:12, count:10 },
-  { id:'maniac', label:'MANIAC', emoji:'💡', desc:'Tu SEI lo show',              color:'#caa43a', light:'rgba(202,164,58,.18)', time:10, count:10 },
+  { id:'easy',   label:'Easy',   emoji:'☕', color:'#4a9e5c', light:'rgba(74,158,92,.16)',  time:20, count:15 },
+  { id:'medium', label:'Medium', emoji:'🛋️', color:'#e07a2b', light:'rgba(224,122,43,.16)', time:18, count:15 },
+  { id:'hard',   label:'Hard',   emoji:'🦎', color:'#c0392b', light:'rgba(192,57,43,.16)',  time:15, count:12 },
+  { id:'expert', label:'Expert', emoji:'📺', color:'#7b5ea7', light:'rgba(123,94,167,.16)', time:12, count:10 },
+  { id:'maniac', label:'MANIAC', emoji:'💡', color:'#caa43a', light:'rgba(202,164,58,.18)', time:10, count:10 },
 ];
 
-// Reaction pools (file in img/reactions/)
-const REACT = {
-  correct: [
-    { img:'good-job.jpg',     quip:"Joey approva. Bravo." },
-    { img:'oh-you.jpg',       quip:"Esatto! Could it BE any more giusto?" },
-    { img:'how-you-doin.gif', quip:"How you doin'? Bene, a quanto pare." },
-  ],
-  wrong: [
-    { img:'shut-up.jpg',      quip:"Pivot! ...no, era sbagliata." },
-    { img:'delusion.jpg',     quip:"\"I've had a very long, hard day.\"" },
-    { img:'desperation.jpg',  quip:"Anche Ross sbaglierebbe meno." },
-    { img:'delusion-2.jpg',   quip:"Non proprio. Riprova alla prossima." },
-    { img:'delusion-again.jpg',quip:"Eh... no." },
-  ],
-  // level-end by score bucket
-  perfect:  { img:'how-you-doin.gif', title:'PERFETTO!',     quip:"Could this BE any more perfetto? Sei una leggenda." },
-  great:    { img:'good-job.jpg',     title:'Grande!',        quip:"Joey ti fa il pollice in su." },
-  ok:       { img:'sad-winner.jpg',   title:'Vincitore... ma triste', quip:"Hai vinto, ma a che prezzo?" },
-  meh:      { img:'almost.jpg',       title:'Ci sei quasi',   quip:"Manca poco. Rigioca." },
-  bad:      { img:'surprise.jpg',     title:'Ouch',           quip:"\"We were on a break!\" — anche dalla serie, a quanto pare." },
-  terrible: { img:'mega-surprise.webp',title:'...',           quip:"Forse è il momento di rivedere lo show. Tutto." },
+// Reaction images per outcome (quips come from i18n)
+const REACT_IMG = {
+  correct:['good-job.jpg','oh-you.jpg','how-you-doin.gif'],
+  wrong:['shut-up.jpg','delusion.jpg','desperation.jpg','delusion-2.jpg','delusion-again.jpg'],
+  perfect:'how-you-doin.gif', great:'good-job.jpg', ok:'sad-winner.jpg',
+  meh:'almost.jpg', bad:'surprise.jpg', terrible:'mega-surprise.webp',
 };
-
-const GRADES = [
-  [95, "Perfetto! How you doin'?! 🏆"],
-  [80, "Could this BE any better?! 🎉"],
-  [65, "We were on a break... 😅"],
-  [50, "Su una scala da 1 a 10... 🤔"],
-  [0,  "Ti serve una pausa dalla serie 😬"],
-];
 
 let state = {
   diff:'medium', questions:[], idx:0, score:0, streak:0, maxStreak:0,
@@ -50,50 +27,97 @@ let state = {
 // ── EPISODE CITATION ──
 function episodeCitation(code){
   if(EP_TITLES[code]) return { tag:code, title:EP_TITLES[code] };
-  if(SEASON_LABELS[code]) return { tag:code, title:SEASON_LABELS[code] };
-  if(META_LABELS[code]) return { tag:'', title:META_LABELS[code] };
+  if(SEASON_LABELS[code]){
+    // SEASON_LABELS like "S01" -> "Stagione 1"/"Season 1" via i18n number
+    const n=parseInt(code.replace('S',''),10);
+    return { tag:code, title:t().season(n) };
+  }
+  if(META_LABELS[code]) return { tag:'', title:t().meta[code]||META_LABELS[code] };
   return { tag:code||'', title:'' };
 }
 
-// ── INIT ──
-function init(){
-  const pool = document.getElementById('pool-stats');
+// ════════ LANGUAGE ════════
+function setLang(lang){
+  LANG = lang;
+  try{ localStorage.setItem('ft_lang', lang); }catch(e){}
+  applyLang();
+}
+function applyLang(){
+  const L = t();
+  // enter overlay
+  setText('enter-sub', L.enter_sub);
+  setHTML('enter-btn-txt', L.enter_btn);
+  setText('enter-hint', L.enter_hint);
+  // home
+  setHTML('quote-q', L.quote);
+  setText('quote-by', L.quote_by);
+  setText('home-h2', L.home_h2);
+  setText('home-p', L.home_p);
+  setText('pool-title', L.pool_title);
+  setHTML('home-footer', L.footer);
+  // rebuild difficulty cards + pool (labels depend on lang)
+  buildPool();
+  buildDiffCards();
+  selectDiff(state.diff);
+  // modal
+  setText('modal-title', L.modal_title);
+  document.getElementById('modal-body').innerHTML = L.modal_p.map(p=>`<p>${p}</p>`).join('');
+  setText('modal-close', L.modal_close);
+  // active language button highlight
+  document.querySelectorAll('.lang-btn').forEach(b=>b.classList.toggle('active', b.dataset.lang===LANG));
+}
+function setText(id,v){const e=document.getElementById(id);if(e)e.textContent=v;}
+function setHTML(id,v){const e=document.getElementById(id);if(e)e.innerHTML=v;}
+
+// ── BUILD UI ──
+function buildPool(){
+  const pool=document.getElementById('pool-stats');if(!pool)return;
+  pool.innerHTML='';
   DIFFICULTIES.forEach(d=>{
-    const n = ALL_QUESTIONS.filter(q=>q.difficulty===d.id).length;
-    pool.innerHTML += `<div class="pool-row" style="display:flex;align-items:center;gap:8px;padding:4px 0;font-size:11px">
+    const n=ALL_QUESTIONS.filter(q=>q.difficulty===d.id).length;
+    pool.innerHTML+=`<div class="pool-row" style="display:flex;align-items:center;gap:8px;padding:4px 0;font-size:11px">
       <span style="width:7px;height:7px;border-radius:50%;background:${d.color}"></span>
       <span style="flex:1;color:rgba(245,236,215,.55)">${d.emoji} ${d.label}</span>
       <span style="font-weight:800;font-family:ui-monospace,monospace;color:${d.color}">${n}</span></div>`;
   });
-
-  const grid = document.getElementById('diff-grid');
+}
+function buildDiffCards(){
+  const grid=document.getElementById('diff-grid');if(!grid)return;
+  const L=t();
+  grid.innerHTML='';
   DIFFICULTIES.forEach(d=>{
-    const n = ALL_QUESTIONS.filter(q=>q.difficulty===d.id).length;
-    const q = Math.min(d.count,n);
-    grid.innerHTML += `<div class="diff-card ${d.id==='medium'?'sel':''}" id="dc-${d.id}" style="--dc:${d.color}" onclick="selectDiff('${d.id}')">
+    const n=ALL_QUESTIONS.filter(q=>q.difficulty===d.id).length;
+    const q=Math.min(d.count,n);
+    const desc=L.diff[d.id][0];
+    grid.innerHTML+=`<div class="diff-card ${d.id===state.diff?'sel':''}" id="dc-${d.id}" style="--dc:${d.color}" onclick="selectDiff('${d.id}')">
       <span class="emoji">${d.emoji}</span>
-      <div class="info"><h3>${d.label}</h3><p>${d.desc}</p></div>
+      <div class="info"><h3>${d.label}</h3><p>${desc}</p></div>
       <span class="badge">${q}Q</span>
-      <span class="chk">${d.id==='medium'?'●':'○'}</span></div>`;
+      <span class="chk">${d.id===state.diff?'●':'○'}</span></div>`;
   });
-  selectDiff('medium');
+}
+
+function init(){
+  // restore lang
+  try{ const s=localStorage.getItem('ft_lang'); if(s)LANG=s; }catch(e){}
 }
 
 function selectDiff(id){
   state.diff=id;
-  const d=DIFFICULTIES.find(x=>x.id===id);
+  const d=DIFFICULTIES.find(x=>x.id===id);const L=t();
   const n=ALL_QUESTIONS.filter(q=>q.difficulty===id).length;
   const q=Math.min(d.count,n);
-  document.querySelectorAll('.diff-card').forEach(el=>{el.classList.remove('sel');el.querySelector('.chk').textContent='○'});
-  const el=document.getElementById('dc-'+id);el.classList.add('sel');el.querySelector('.chk').textContent='●';
-  document.getElementById('start-emoji').textContent=d.emoji;
-  document.getElementById('start-label').textContent='Inizia '+d.label;
-  document.getElementById('start-meta').textContent=q+' domande · timer '+d.time+'s';
-  document.getElementById('start-btn').style.background=d.color;
-  document.getElementById('start-btn').style.boxShadow=`0 6px 0 ${shade(d.color,-25)},0 10px 24px rgba(0,0,0,.4)`;
+  document.querySelectorAll('.diff-card').forEach(el=>{el.classList.remove('sel');const c=el.querySelector('.chk');if(c)c.textContent='○';});
+  const el=document.getElementById('dc-'+id);
+  if(el){el.classList.add('sel');el.querySelector('.chk').textContent='●';}
+  setText('start-emoji', d.emoji);
+  setText('start-label', L.start+' '+d.label);
+  setText('start-meta', L.start_meta(q,d.time));
+  const sb=document.getElementById('start-btn');
+  if(sb){sb.style.background=d.color;sb.style.boxShadow=`0 6px 0 ${shade(d.color,-25)},0 10px 24px rgba(0,0,0,.4)`;}
 }
 
-// ── GAME ──
+// ════════ GAME ════════
 function startGame(){
   const d=DIFFICULTIES.find(x=>x.id===state.diff);
   const pool=ALL_QUESTIONS.filter(q=>q.difficulty===state.diff);
@@ -105,18 +129,18 @@ function startGame(){
   pill.style.background=d.light;pill.style.color=d.color;pill.style.border='1.5px solid '+d.color+'66';
   document.getElementById('prog-fill').style.background=d.color;
 
-  music.duck(true);
-  music.sting();
+  music.pauseTheme();   // metti in pausa la musica del menu
+  music.sting();        // stacchetto d'ingresso
   goScreen('game');
   renderQuestion();
 }
 
 function renderQuestion(){
   const q=state.questions[state.idx];
-  const d=DIFFICULTIES.find(x=>x.id===state.diff);
+  const d=DIFFICULTIES.find(x=>x.id===state.diff);const L=t();
   state.answered=false;
 
-  document.getElementById('q-counter').textContent='Domanda '+(state.idx+1)+' di '+state.questions.length;
+  setText('q-counter', `${L.question} ${state.idx+1} ${L.of} ${state.questions.length}`);
   document.getElementById('prog-fill').style.width=(state.idx/state.questions.length*100)+'%';
   updateScore();
   document.getElementById('q-text').textContent=q.question;
@@ -132,8 +156,8 @@ function renderQuestion(){
 
   document.getElementById('reveal').className='reveal';
   document.getElementById('reveal').innerHTML='';
-  document.getElementById('foot-left').innerHTML='<button class="skip-btn" onclick="skip()">Salta →</button>';
-  document.getElementById('foot-right').innerHTML='<span class="hint">Premi 1–4 per rispondere</span>';
+  document.getElementById('foot-left').innerHTML=`<button class="skip-btn" onclick="skip()">${L.skip}</button>`;
+  document.getElementById('foot-right').innerHTML=`<span class="hint">${L.hint}</span>`;
 
   startTimer(d.time);
 }
@@ -173,30 +197,32 @@ function answer(idx){
   showReveal(correct,q);
 
   const isLast=state.idx>=state.questions.length-1;
-  const d=DIFFICULTIES.find(x=>x.id===state.diff);
+  const d=DIFFICULTIES.find(x=>x.id===state.diff);const L=t();
   document.getElementById('foot-left').innerHTML='';
   document.getElementById('foot-right').innerHTML=
-    `<button class="next-btn" style="background:${d.color}" onclick="next()">${isLast?'Risultati':'Avanti'} ${isLast?'✓':'→'}</button>`;
+    `<button class="next-btn" style="background:${d.color}" onclick="next()">${isLast?L.results_btn:L.next} ${isLast?'✓':'→'}</button>`;
 }
 
 function showReveal(correct,q){
-  const pool=correct?REACT.correct:REACT.wrong;
-  // avoid repeating same reaction twice in a row
-  let i;const key=correct?'correct':'wrong';
-  do{i=Math.floor(Math.random()*pool.length)}while(pool.length>1&&i===state.lastReact[key]);
+  const L=t();
+  const imgs=correct?REACT_IMG.correct:REACT_IMG.wrong;
+  const quips=correct?L.quip_ok:L.quip_no;
+  const key=correct?'correct':'wrong';
+  let i;do{i=Math.floor(Math.random()*imgs.length)}while(imgs.length>1&&i===state.lastReact[key]);
   state.lastReact[key]=i;
-  const r=pool[i];
+  const img=imgs[i];
+  const quip=quips[i%quips.length];
   const cit=episodeCitation(q.episode);
-  const epHtml = cit.tag||cit.title
+  const epHtml=(cit.tag||cit.title)
     ? `<div class="reveal-ep">📺 ${cit.tag?`<span class="tag">${cit.tag}</span>`:''}${cit.title?`<span class="title">${esc(cit.title)}</span>`:''}</div>`
     : '';
   const rev=document.getElementById('reveal');
   rev.innerHTML=`
-    <img class="reveal-img" src="img/reactions/${r.img}" alt="" onerror="this.style.display='none'">
+    <img class="reveal-img" src="img/reactions/${img}" alt="" onerror="this.style.display='none'">
     <div class="reveal-body">
-      <div class="reveal-verdict ${correct?'ok':'no'}">${correct?'GIUSTO!':'SBAGLIATO'}</div>
-      <div class="reveal-quip">${r.quip}</div>
-      <div class="reveal-ep" style="margin-bottom:4px">✔︎ Risposta: <span class="title" style="color:#5cba6e">${esc(q.answer)}</span></div>
+      <div class="reveal-verdict ${correct?'ok':'no'}">${correct?L.correct:L.wrong}</div>
+      <div class="reveal-quip">${quip}</div>
+      <div class="reveal-ep" style="margin-bottom:4px">✔︎ ${L.answer_label} <span class="title" style="color:#5cba6e">${esc(q.answer)}</span></div>
       ${epHtml}
     </div>`;
   rev.className='reveal show';
@@ -205,7 +231,7 @@ function showReveal(correct,q){
 function skip(){
   if(state.answered)return;
   clearInterval(state.timerInt);state.answered=true;
-  const q=state.questions[state.idx];
+  const q=state.questions[state.idx];const L=t();
   state.streak=0;state.wrong.push({question:q,chosen:'—'});
   q.options.forEach((opt,i)=>{
     const btn=document.getElementById('ab-'+i);btn.classList.add('revealed');btn.onclick=null;
@@ -216,7 +242,7 @@ function skip(){
   const d=DIFFICULTIES.find(x=>x.id===state.diff);
   document.getElementById('foot-left').innerHTML='';
   document.getElementById('foot-right').innerHTML=
-    `<button class="next-btn" style="background:${d.color}" onclick="next()">${isLast?'Risultati':'Avanti'} ${isLast?'✓':'→'}</button>`;
+    `<button class="next-btn" style="background:${d.color}" onclick="next()">${isLast?L.results_btn:L.next} ${isLast?'✓':'→'}</button>`;
 }
 
 function next(){
@@ -226,37 +252,38 @@ function next(){
     state.idx++;
     if(state.idx>=state.questions.length){showResults();return;}
     renderQuestion();
-  },160);
+  },210);
 }
 
 function updateScore(){
-  document.getElementById('g-score').firstElementChild.nextElementSibling;
   document.getElementById('score-txt').textContent=state.score+' / '+(state.answered?state.idx+1:state.idx);
   const s=document.getElementById('streak');
   if(state.streak>1){s.style.display='flex';document.getElementById('streak-n').textContent=state.streak;}
   else s.style.display='none';
 }
 
-// ── RESULTS ──
+// ════════ RESULTS ════════
 function showResults(){
   clearInterval(state.timerInt);
-  music.duck(false);
+  music.resumeTheme();
+  const L=t();
   const total=state.questions.length;
   const pct=total?state.score/total*100:0;
-  const grade=GRADES.find(g=>pct>=g[0])[1];
+  const grade=L.grades.find(g=>pct>=g[0])[1];
   const d=DIFFICULTIES.find(x=>x.id===state.diff);
   const gc=pct>=90?'#5cba6e':pct>=70?'#e07a2b':pct>=50?'#d4a02a':'#e0594d';
 
-  // pick reaction bucket
-  let bucket;
-  if(pct===100)bucket=REACT.perfect;
-  else if(pct>=85)bucket=REACT.great;
-  else if(pct>=70)bucket=REACT.ok;
-  else if(pct>=50)bucket=REACT.meh;
-  else if(pct>=30)bucket=REACT.bad;
-  else bucket=REACT.terrible;
+  let bucketKey;
+  if(pct===100)bucketKey='perfect';
+  else if(pct>=85)bucketKey='great';
+  else if(pct>=70)bucketKey='ok';
+  else if(pct>=50)bucketKey='meh';
+  else if(pct>=30)bucketKey='bad';
+  else bucketKey='terrible';
+  const bImg=REACT_IMG[bucketKey];
+  const bText=L.buckets[bucketKey];
 
-  document.getElementById('res-reaction').src='img/reactions/'+bucket.img;
+  document.getElementById('res-reaction').src='img/reactions/'+bImg;
   document.getElementById('res-score').textContent=state.score;
   document.getElementById('res-score').style.color=gc;
   document.getElementById('res-total').textContent='/ '+total;
@@ -266,6 +293,10 @@ function showResults(){
   document.getElementById('res-correct').textContent=state.score;
   document.getElementById('res-wrong').textContent=state.wrong.length;
   document.getElementById('res-streak').textContent=state.maxStreak+'🔥';
+  setText('res-correct-l', L.correct_stat);
+  setText('res-wrong-l', L.wrong_stat);
+  setText('res-streak-l', L.streak_stat);
+  setText('review-h', L.review);
 
   const circ=2*Math.PI*70;
   const ring=document.getElementById('ring-fill');
@@ -273,9 +304,9 @@ function showResults(){
   setTimeout(()=>{ring.style.strokeDashoffset=circ*(1-pct/100)},100);
 
   const rb=document.getElementById('replay-btn');
-  rb.textContent='↻ Rigioca '+d.label;rb.style.background=d.color;rb.style.boxShadow=`0 4px 0 ${shade(d.color,-25)}`;
+  rb.textContent=L.replay+' '+d.label;rb.style.background=d.color;rb.style.boxShadow=`0 4px 0 ${shade(d.color,-25)}`;
+  setText('home-link', L.change_diff);
 
-  // review
   const list=document.getElementById('review-list');
   const meta=document.getElementById('review-meta');
   list.innerHTML='';
@@ -283,9 +314,9 @@ function showResults(){
     meta.textContent='';
     list.innerHTML=`<div class="perfect">
       <img src="img/reactions/how-you-doin.gif" alt="">
-      <h3>${bucket.title}</h3><p>${bucket.quip}</p></div>`;
+      <h3>${bText[0]}</h3><p>${bText[1]}</p></div>`;
   }else{
-    meta.textContent=state.wrong.length+' da rivedere';
+    meta.textContent=L.to_review(state.wrong.length);
     state.wrong.forEach((w,i)=>{
       const cit=episodeCitation(w.question.episode);
       const epHtml=(cit.tag||cit.title)?`<div class="rev-ep">📺 ${cit.tag?`<span class="tag">${cit.tag}</span>`:''}${cit.title?esc(cit.title):''}</div>`:'';
@@ -296,20 +327,20 @@ function showResults(){
           <span class="rev-tog" id="rt-${i}">▸</span></div>
         <div class="rev-detail" id="rd-${i}">
           <div class="rev-correct">✓ ${esc(w.question.answer)}</div>
-          ${w.chosen!=='—'?`<div class="rev-chosen">✗ Hai scelto: ${esc(w.chosen)}</div>`:'<div class="rev-chosen">⏱ Tempo scaduto</div>'}
+          ${w.chosen!=='—'?`<div class="rev-chosen">✗ ${L.you_chose} ${esc(w.chosen)}</div>`:`<div class="rev-chosen">${L.time_out}</div>`}
           ${epHtml}</div></div>`;
     });
   }
   goScreen('results');
 }
 function togRev(i){
-  const el=document.getElementById('rd-'+i),t=document.getElementById('rt-'+i);
-  const open=el.classList.toggle('open');t.textContent=open?'▾':'▸';
+  const el=document.getElementById('rd-'+i),tg=document.getElementById('rt-'+i);
+  const open=el.classList.toggle('open');tg.textContent=open?'▾':'▸';
 }
 function replay(){startGame();}
-function goHome(){clearInterval(state.timerInt);music.duck(false);goScreen('home');}
+function goHome(){clearInterval(state.timerInt);music.resumeTheme();goScreen('home');}
 
-// ── SCREEN TRANSITIONS (channel-flip) ──
+// ════════ SCREEN TRANSITIONS ════════
 function goScreen(id){
   const cur=document.querySelector('.screen.active');
   const nxt=document.getElementById(id);
@@ -329,34 +360,26 @@ function flash(){
   const f=document.getElementById('flash');f.classList.remove('go');void f.offsetWidth;f.classList.add('go');
 }
 
-// ── AUDIO ──
+// ════════ AUDIO ════════
 const music={
-  el:null,muted:false,baseVol:0.5,_ducked:false,started:false,
+  el:null,muted:false,baseVol:0.5,_ducked:false,started:false,_wasPlaying:false,
   trans:[], _lastTrans:-1,
   init(){
     this.el=document.getElementById('bg-music');
     this.el.volume=this.baseVol;
-    // preload transition sounds
     for(let i=1;i<=8;i++){
       const a=new Audio('audio/transitions/t'+i+'.mp3');
-      a.preload='auto';a.volume=0.55;
-      this.trans.push(a);
+      a.preload='auto';a.volume=0.55;this.trans.push(a);
     }
   },
-  // called after user clicks "entra" — autoplay policy satisfied
   start(){
     if(this.started)return;
     this.started=true;
-    this.el.play().catch(()=>{});
-    this.updateBtn();
+    this.el.play().catch(()=>{});this.updateBtn();
   },
-  toggle(){
-    if(this.el.paused)this.el.play().catch(()=>{});else this.el.pause();
-    this.updateBtn();
-  },
+  toggle(){ if(this.el.paused)this.el.play().catch(()=>{});else this.el.pause(); this.updateBtn(); },
   mute(){
     this.muted=!this.muted;this.el.muted=this.muted;
-    // also mute transitions
     this.trans.forEach(a=>a.muted=this.muted);
     document.getElementById('mute-btn').classList.toggle('muted',this.muted);
     document.getElementById('mute-btn').textContent=this.muted?'🔇':'🔊';
@@ -366,11 +389,14 @@ const music={
     if(!this._ducked)this.el.volume=this.baseVol;
     this.trans.forEach(a=>a.volume=Math.min(1,this.baseVol+0.1));
   },
-  duck(on){ // lower theme volume during gameplay
-    this._ducked=on;
-    if(this.el)this.el.volume=on?this.baseVol*0.5:this.baseVol;
+  duck(on){ this._ducked=on; if(this.el)this.el.volume=on?this.baseVol*0.5:this.baseVol; },
+  pauseTheme(){
+    if(this.el && !this.el.paused){ this._wasPlaying=true; this.el.pause(); this.updateBtn(); }
+    else { this._wasPlaying=false; }
   },
-  // play a random transition sting (between questions / screen changes)
+  resumeTheme(){
+    if(this.el && this._wasPlaying && !this.muted){ this.el.play().catch(()=>{}); this.updateBtn(); }
+  },
   sting(){
     if(this.muted||!this.started||this.trans.length===0)return;
     let i;do{i=Math.floor(Math.random()*this.trans.length)}while(this.trans.length>1&&i===this._lastTrans);
@@ -378,17 +404,28 @@ const music={
     const a=this.trans[i];
     try{a.currentTime=0;a.play().catch(()=>{});}catch(e){}
   },
-  updateBtn(){
-    const b=document.getElementById('play-btn');
-    if(b)b.textContent=this.el.paused?'▶':'⏸';
-  }
+  updateBtn(){ const b=document.getElementById('play-btn'); if(b)b.textContent=this.el.paused?'▶':'⏸'; }
 };
 
-// ── MODAL ──
+// ════════ MODAL ════════
 function showModal(){document.getElementById('modal').classList.add('show')}
 function hideModal(){document.getElementById('modal').classList.remove('show')}
 
-// ── UTILS ──
+// ════════ ENTER ════════
+function enterSite(){
+  document.getElementById('lang-overlay').classList.add('hide');
+  setTimeout(()=>{const o=document.getElementById('lang-overlay');if(o)o.style.display='none';},600);
+  music.start();
+}
+// language picked from the very first overlay
+function pickLang(lang){
+  setLang(lang);
+  // swap from lang screen to enter screen
+  document.getElementById('lang-choose').style.display='none';
+  document.getElementById('lang-enter').style.display='block';
+}
+
+// ════════ UTILS ════════
 function esc(s){return String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]))}
 function shade(hex,pct){
   const n=parseInt(hex.slice(1),16);let r=(n>>16)+pct,g=(n>>8&255)+pct,b=(n&255)+pct;
@@ -396,19 +433,16 @@ function shade(hex,pct){
   return'#'+(r<<16|g<<8|b).toString(16).padStart(6,'0');
 }
 
-// keyboard
 document.addEventListener('keydown',e=>{
   const sc=document.querySelector('.screen.active')?.id;
   if(sc==='game'){
-    if(!state.answered){
-      if(['1','2','3','4'].includes(e.key))answer(parseInt(e.key)-1);
-    }else if(e.key==='Enter'||e.key===' '){e.preventDefault();next();}
+    if(!state.answered){ if(['1','2','3','4'].includes(e.key))answer(parseInt(e.key)-1); }
+    else if(e.key==='Enter'||e.key===' '){e.preventDefault();next();}
   }
 });
 
-function enterSite(){
-  document.getElementById('enter-overlay').classList.add('hide');
-  setTimeout(()=>{const o=document.getElementById('enter-overlay');if(o)o.style.display='none';},600);
-  music.start();
-}
-window.addEventListener('DOMContentLoaded',()=>{init();music.init();});
+window.addEventListener('DOMContentLoaded',()=>{
+  init();
+  music.init();
+  applyLang();   // render UI in stored/default language
+});
