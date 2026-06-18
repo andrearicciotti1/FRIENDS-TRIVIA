@@ -13,7 +13,7 @@ const I18N = {
     pool_title:"Domande disponibili",
     start:"Inizia",
     start_meta:(q,t)=>`${q} domande · timer ${t}s`,
-    footer:'Un fan project — nessun diritto detenuto · <span class="disclaimer-trigger" onclick="showModal()">Note legali</span><br>Fatto con ☕ a Roma',
+    footer:'Un fan project — nessun diritto detenuto · <span class="disclaimer-trigger" onclick="showModal()">Note legali</span><br>Fatto con ☕ a Roma<br><span class="credit">Creato da <a href="https://www.instagram.com/andrea_ricciotti1/?hl=en" target="_blank" rel="noopener">Andrea Ricciotti</a> con Claude</span>',
     lang_label:"Lingua",
     // ── players / leaderboard ──
     player_title:"Chi sta giocando?",
@@ -135,7 +135,7 @@ const I18N = {
     pool_title:"Available questions",
     start:"Start",
     start_meta:(q,t)=>`${q} questions · ${t}s timer`,
-    footer:'A fan project — no rights held · <span class="disclaimer-trigger" onclick="showModal()">Legal notice</span><br>Made with ☕ in Rome',
+    footer:'A fan project — no rights held · <span class="disclaimer-trigger" onclick="showModal()">Legal notice</span><br>Made with ☕ in Rome<br><span class="credit">Created by <a href="https://www.instagram.com/andrea_ricciotti1/?hl=en" target="_blank" rel="noopener">Andrea Ricciotti</a> with Claude</span>',
     lang_label:"Language",
     // ── players / leaderboard ──
     player_title:"Who's playing?",

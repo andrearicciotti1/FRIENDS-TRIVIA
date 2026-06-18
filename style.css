@@ -170,6 +170,9 @@ body::after{
 
 .home-footer{margin-top:22px;font-size:11px;color:var(--muted);opacity:.7;line-height:1.6}
 .home-footer a{color:var(--orange-l);cursor:pointer;text-decoration:underline}
+.home-footer .credit{display:inline-block;margin-top:6px;font-size:11px;letter-spacing:.02em}
+.home-footer .credit a{font-weight:700;text-decoration:none;border-bottom:1px solid rgba(242,162,77,.5)}
+.home-footer .credit a:hover{color:#fff;border-bottom-color:#fff}
 
 /* ════════ GAME ════════ */
 #game{flex-direction:column;background:linear-gradient(160deg,var(--bg),var(--bg2))}
