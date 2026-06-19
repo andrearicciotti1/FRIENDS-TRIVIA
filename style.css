@@ -187,7 +187,7 @@ body::after{
 .g-score{font-family:ui-monospace,monospace;font-weight:700;font-size:15px;display:flex;align-items:center;gap:12px}
 .streak{color:#ff8c2e;font-size:14px;display:flex;align-items:center;gap:3px}
 
-.g-body{flex:1;overflow-y:auto;display:flex;flex-direction:column;gap:18px;padding:22px 28px;max-width:840px;width:100%;margin:0 auto}
+.g-body{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;min-height:0;display:flex;flex-direction:column;gap:18px;padding:22px 28px;max-width:840px;width:100%;margin:0 auto}
 
 .prog{display:flex;flex-direction:column;gap:8px}
 .prog-meta{display:flex;justify-content:space-between;font-size:12px;color:var(--muted)}
@@ -251,16 +251,23 @@ body::after{
 .reveal-ep .tag{background:rgba(224,122,43,.16);color:var(--orange-l);padding:3px 8px;border-radius:6px;font-family:ui-monospace,monospace;font-weight:700}
 .reveal-ep .title{font-weight:600;color:var(--cream);opacity:.8}
 
-.g-foot{display:flex;align-items:center;justify-content:space-between;gap:14px}
+.g-foot{
+  flex-shrink:0;display:flex;align-items:center;justify-content:space-between;gap:14px;
+  padding:14px 28px;max-width:840px;width:100%;margin:0 auto;
+  background:rgba(0,0,0,.28);border-top:1px solid rgba(224,122,43,.25);
+}
 .skip-btn{background:none;border:none;cursor:pointer;font-size:13px;color:var(--muted);font-weight:600}
 .skip-btn:hover{color:var(--cream)}
 .hint{font-size:12px;color:rgba(169,140,99,.5)}
+#foot-right{margin-left:auto}
 .next-btn{
-  padding:12px 26px;border:none;border-radius:10px;cursor:pointer;color:#fff;
-  font-family:'Bebas Neue';font-size:19px;letter-spacing:.05em;display:flex;align-items:center;gap:8px;
-  box-shadow:0 4px 0 rgba(0,0,0,.3);transition:transform .1s
+  padding:16px 34px;border:none;border-radius:12px;cursor:pointer;color:#fff;
+  font-family:'Bebas Neue';font-size:23px;letter-spacing:.05em;display:flex;align-items:center;gap:10px;
+  box-shadow:0 4px 0 rgba(0,0,0,.3),0 0 0 3px rgba(255,255,255,.08);transition:transform .1s;
+  animation:nextPulse 1.4s ease-in-out infinite;
 }
 .next-btn:active{transform:translateY(3px);box-shadow:0 1px 0 rgba(0,0,0,.3)}
+@keyframes nextPulse{0%,100%{box-shadow:0 4px 0 rgba(0,0,0,.3),0 0 0 0 rgba(255,255,255,.25)}50%{box-shadow:0 4px 0 rgba(0,0,0,.3),0 0 0 8px rgba(255,255,255,0)}}
 
 /* ════════ RESULTS ════════ */
 #results{align-items:center;justify-content:center;background:linear-gradient(160deg,var(--bg),var(--bg2))}
@@ -386,9 +393,10 @@ body::after{
   .audio-ctl .vol{display:none}
   .audio-label{display:none}
   .audio-btn{width:40px;height:40px;font-size:15px}
-  /* leave room at the bottom of the game so the floating control clears the footer */
-  .g-body{padding-bottom:78px}
   .q-image{max-height:210px}
+  /* leave room on the right of the sticky footer so the floating audio control clears the Next button */
+  .g-foot{padding-right:64px}
+  .next-btn{font-size:19px;padding:14px 22px}
 }
 
 /* ════════ ENTER OVERLAY ════════ */
