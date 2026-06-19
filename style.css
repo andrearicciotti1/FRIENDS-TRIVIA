@@ -170,6 +170,9 @@ body::after{
 
 .home-footer{margin-top:22px;font-size:11px;color:var(--muted);opacity:.7;line-height:1.6}
 .home-footer a{color:var(--orange-l);cursor:pointer;text-decoration:underline}
+.home-footer .credit{display:inline-block;margin-top:6px;font-size:11px;letter-spacing:.02em}
+.home-footer .credit a{font-weight:700;text-decoration:none;border-bottom:1px solid rgba(242,162,77,.5)}
+.home-footer .credit a:hover{color:#fff;border-bottom-color:#fff}
 
 /* ════════ GAME ════════ */
 #game{flex-direction:column;background:linear-gradient(160deg,var(--bg),var(--bg2))}
@@ -323,6 +326,44 @@ body::after{
 .audio-ctl:hover .audio-label{max-width:120px;padding-right:6px}
 .vol{width:60px;accent-color:var(--orange);cursor:pointer}
 
+/* ════════ QUESTION IMAGE (stills) + META ════════ */
+.q-image{
+  display:block;max-width:100%;max-height:300px;width:auto;margin:2px auto 12px;
+  border-radius:12px;border:3px solid var(--gold);box-shadow:0 8px 24px rgba(0,0,0,.45);object-fit:contain;
+}
+.q-meta{display:flex;align-items:center;justify-content:center;gap:12px;margin-top:-6px}
+.q-id{
+  font-family:ui-monospace,monospace;font-size:10.5px;font-weight:700;color:var(--muted);
+  background:rgba(0,0,0,.25);padding:3px 9px;border-radius:20px;letter-spacing:.5px;
+}
+.report-btn{
+  border:1px solid rgba(224,89,77,.35);background:rgba(224,89,77,.08);color:#e0917f;
+  cursor:pointer;font-family:'Libre Franklin';font-weight:600;font-size:11px;
+  padding:4px 11px;border-radius:20px;transition:background .15s;
+}
+.report-btn:hover{background:rgba(224,89,77,.2);color:#f0b5a8}
+
+/* ════════ PROPOSE BUTTON + MODAL ════════ */
+.propose-btn{
+  width:100%;margin-top:12px;padding:11px;border-radius:10px;cursor:pointer;
+  border:1.5px solid rgba(123,94,167,.45);background:rgba(123,94,167,.12);color:var(--cream);
+  font-family:'Libre Franklin';font-weight:700;font-size:13px;transition:background .15s;
+}
+.propose-btn:hover{background:rgba(123,94,167,.26)}
+.propose-box{max-width:480px;width:100%}
+.pr-label{display:block;font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);font-weight:700;margin:12px 0 5px}
+.propose-box input[type=text],.propose-box select{
+  width:100%;padding:10px 12px;border-radius:9px;border:1.5px solid rgba(224,122,43,.3);
+  background:rgba(0,0,0,.3);color:var(--cream);font-family:'Libre Franklin';font-size:14px;
+}
+.propose-box input[type=text]:focus,.propose-box select:focus{outline:none;border-color:var(--orange)}
+.pr-opt{display:flex;align-items:center;gap:9px;margin-bottom:7px}
+.pr-opt input[type=radio]{accent-color:var(--green);width:18px;height:18px;flex:0 0 18px;cursor:pointer}
+.pr-opt input[type=text]{flex:1}
+.pr-row2{display:flex;gap:12px;margin-top:4px}
+.pr-row2>div{flex:1}
+.pr-send{width:100%;margin-top:14px;padding:12px}
+
 /* ════════ DISCLAIMER MODAL ════════ */
 .modal-bg{position:fixed;inset:0;z-index:9700;background:rgba(0,0,0,.78);display:none;align-items:center;justify-content:center;padding:24px;backdrop-filter:blur(3px)}
 .modal-bg.show{display:flex}
@@ -339,6 +380,14 @@ body::after{
   .res-left{flex:none;border-right:none;border-bottom:1px solid rgba(224,122,43,.18);padding-bottom:24px;margin-bottom:20px}
   .res-right{padding-left:0}
   .reveal-img{width:90px;height:68px}
+  /* compact audio control so it never sits on top of the Next button */
+  .audio-ctl{bottom:10px;right:10px;padding:5px 6px;gap:5px}
+  .audio-ctl .vol{display:none}
+  .audio-label{display:none}
+  .audio-btn{width:40px;height:40px;font-size:15px}
+  /* leave room at the bottom of the game so the floating control clears the footer */
+  .g-body{padding-bottom:78px}
+  .q-image{max-height:210px}
 }
 
 /* ════════ ENTER OVERLAY ════════ */
@@ -392,3 +441,102 @@ body::after{
 .lang-btn:hover{opacity:.85}
 .lang-btn.active{opacity:1;background:rgba(224,122,43,.25)}
 #home .home-inner{position:relative}
+
+/* ════════ PLAYER BAR ════════ */
+.player-bar{
+  display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;
+  max-width:520px;margin:0 auto 18px;padding:10px 14px;
+  background:rgba(0,0,0,.28);border:1.5px solid rgba(224,122,43,.22);border-radius:14px;
+}
+.player-id{display:flex;align-items:center;gap:11px;min-width:0}
+.player-av{
+  width:38px;height:38px;border-radius:50%;flex:0 0 38px;display:flex;align-items:center;justify-content:center;
+  font-size:19px;background:linear-gradient(150deg,var(--orange),var(--orange-d));box-shadow:0 3px 8px rgba(0,0,0,.4);
+}
+.player-meta{display:flex;flex-direction:column;line-height:1.15;min-width:0}
+.player-as{font-size:8.5px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);font-weight:700}
+.player-name{font-family:'Bebas Neue';font-size:19px;letter-spacing:.03em;color:var(--cream);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:180px}
+.player-name.guest{color:var(--muted)}
+.player-actions{display:flex;gap:7px}
+.pbar-btn{
+  border:1.5px solid rgba(224,122,43,.35);background:rgba(224,122,43,.08);color:var(--cream);
+  cursor:pointer;font-family:'Libre Franklin';font-weight:700;font-size:11px;letter-spacing:.02em;
+  padding:8px 11px;border-radius:9px;transition:background .15s,transform .1s;white-space:nowrap;
+}
+.pbar-btn:hover{background:rgba(224,122,43,.22)}
+.pbar-btn:active{transform:translateY(1px)}
+.pbar-btn.lb{border-color:rgba(212,160,42,.5);background:rgba(212,160,42,.12)}
+.pbar-btn.lb:hover{background:rgba(212,160,42,.26)}
+@media(max-width:480px){.player-bar{flex-direction:column;align-items:stretch}.player-actions{justify-content:center}.player-name{max-width:none}}
+
+/* ════════ GAME POINTS ════════ */
+.g-points{
+  font-family:ui-monospace,monospace;font-weight:800;color:var(--gold);
+  background:rgba(212,160,42,.14);padding:3px 9px;border-radius:8px;font-size:14px;
+}
+.g-points small{font-size:9px;opacity:.7;font-weight:700}
+.g-points.bump{animation:ptbump .4s ease}
+@keyframes ptbump{0%{transform:scale(1)}40%{transform:scale(1.28);color:#fff}100%{transform:scale(1)}}
+
+/* ════════ RESULTS POINTS ════════ */
+.res-points{margin:6px auto 2px;text-align:center}
+.res-points .rp-total{font-family:'Anton','Bebas Neue';font-size:40px;line-height:1;color:var(--gold);letter-spacing:.01em}
+.res-points .rp-total small{font-size:15px;color:var(--muted);margin-left:4px;letter-spacing:1px}
+.res-points .rp-label{font-size:9px;letter-spacing:2.5px;text-transform:uppercase;color:var(--muted);font-weight:700;margin-bottom:3px}
+.res-points .rp-break{display:flex;flex-direction:column;gap:3px;margin-top:8px;font-size:11.5px}
+.res-points .rp-row{display:flex;justify-content:space-between;gap:14px;color:rgba(245,236,215,.7)}
+.res-points .rp-row.bonus{color:var(--green);font-weight:700}
+.res-points .rp-row b{color:var(--cream);font-family:ui-monospace,monospace}
+.res-points .rp-record{margin-top:8px;font-weight:800;color:var(--gold);font-size:12px;animation:ptbump .5s ease}
+
+/* ════════ PLAYER MODAL ════════ */
+.player-modal-box,.lb-box{max-width:440px;width:100%}
+.pm-sub{font-size:12.5px;color:var(--muted)!important;margin-bottom:16px!important;opacity:1!important}
+.pm-register{display:flex;gap:8px;margin-bottom:6px}
+#pm-input{
+  flex:1;min-width:0;padding:12px 14px;border-radius:10px;border:1.5px solid rgba(224,122,43,.35);
+  background:rgba(0,0,0,.3);color:var(--cream);font-family:'Libre Franklin';font-size:15px;font-weight:600;
+}
+#pm-input:focus{outline:none;border-color:var(--orange)}
+.pm-go{
+  border:none;border-radius:10px;background:var(--orange);color:#fff;cursor:pointer;
+  font-family:'Bebas Neue';font-size:17px;letter-spacing:.04em;padding:0 16px;white-space:nowrap;
+}
+.pm-go:hover{background:var(--orange-l)}
+.pm-err{color:#e0594d;font-size:12px;font-weight:600;min-height:16px;margin-bottom:6px}
+.pm-existing-wrap{margin:6px 0 14px;border-top:1px solid rgba(224,122,43,.18);padding-top:14px}
+.pm-existing-wrap h4{font-size:9px;letter-spacing:3px;text-transform:uppercase;color:var(--muted);font-weight:700;margin-bottom:10px}
+.pm-list{display:flex;flex-direction:column;gap:7px;max-height:230px;overflow-y:auto}
+.pm-player{
+  display:flex;align-items:center;gap:10px;padding:9px 11px;border-radius:10px;cursor:pointer;
+  background:rgba(0,0,0,.22);border:1.5px solid transparent;transition:border-color .15s,background .15s;
+}
+.pm-player:hover{background:rgba(224,122,43,.12);border-color:rgba(224,122,43,.4)}
+.pm-player .ppi{width:30px;height:30px;border-radius:50%;flex:0 0 30px;display:flex;align-items:center;justify-content:center;font-size:14px;background:linear-gradient(150deg,var(--orange),var(--orange-d))}
+.pm-player .ppn{flex:1;min-width:0}
+.pm-player .ppn b{display:block;font-family:'Bebas Neue';font-size:17px;letter-spacing:.02em;color:var(--cream);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.pm-player .ppn span{font-size:10px;color:var(--muted);font-family:ui-monospace,monospace}
+.pm-player .ppdel{border:none;background:transparent;color:var(--muted);cursor:pointer;font-size:15px;padding:4px;opacity:.6;border-radius:6px}
+.pm-player .ppdel:hover{opacity:1;color:#e0594d;background:rgba(224,89,77,.12)}
+.pm-guest{
+  width:100%;margin-top:4px;padding:11px;border:1.5px solid rgba(169,140,99,.35);border-radius:10px;
+  background:transparent;color:var(--muted);cursor:pointer;font-family:'Libre Franklin';font-weight:700;font-size:13px;
+}
+.pm-guest:hover{color:var(--cream);border-color:var(--muted)}
+
+/* ════════ LEADERBOARD ════════ */
+.lb-list{display:flex;flex-direction:column;gap:6px;max-height:54vh;overflow-y:auto;margin-bottom:6px}
+.lb-empty{text-align:center;color:var(--muted);font-size:13px;padding:30px 10px;line-height:1.6}
+.lb-row{
+  display:flex;align-items:center;gap:11px;padding:10px 12px;border-radius:11px;
+  background:rgba(0,0,0,.22);border:1.5px solid transparent;
+}
+.lb-row.me{border-color:rgba(224,122,43,.5);background:rgba(224,122,43,.1)}
+.lb-rank{font-family:'Anton','Bebas Neue';font-size:20px;width:30px;text-align:center;color:var(--muted);flex:0 0 30px}
+.lb-row.r1 .lb-rank{color:#d4a02a}.lb-row.r2 .lb-rank{color:#cfcfcf}.lb-row.r3 .lb-rank{color:#cd7f32}
+.lb-info{flex:1;min-width:0}
+.lb-info b{display:block;font-family:'Bebas Neue';font-size:18px;letter-spacing:.02em;color:var(--cream);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.lb-info .lb-you-tag{font-size:9px;background:var(--orange);color:#fff;padding:1px 6px;border-radius:20px;margin-left:6px;letter-spacing:1px;vertical-align:middle}
+.lb-info span{font-size:10.5px;color:var(--muted);font-family:ui-monospace,monospace}
+.lb-pts{font-family:ui-monospace,monospace;font-weight:800;font-size:17px;color:var(--gold);text-align:right}
+.lb-pts small{display:block;font-size:8.5px;color:var(--muted);letter-spacing:1.5px;font-weight:700}

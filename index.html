@@ -3,10 +3,10 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
-<title>Friends Trivia — Central Perk Edition</title>
+<title>Friends Trivia — Fan Made</title>
 <meta name="description" content="Quiz a tema Friends. 700+ domande, 5 livelli di difficoltà. Fan project.">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%E2%98%95%3C/text%3E%3C/svg%3E">
-<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="style.css?v=6">
 </head>
 <body>
 <div class="grain"></div>
@@ -17,7 +17,7 @@
   <div class="enter-inner">
     <div class="enter-cup">☕</div>
     <div class="enter-title">FRIENDS</div>
-    <div class="enter-sub" id="enter-sub">TRIVIA · Central Perk Edition</div>
+    <div class="enter-sub" id="enter-sub">TRIVIA · FAN MADE</div>
 
     <!-- step 1: choose language -->
     <div id="lang-choose">
@@ -44,13 +44,28 @@
       <div class="logo-title">FRIENDS</div>
       <div class="logo-dots"><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span></div>
       <div class="logo-sub">TRIVIA</div>
-      <div class="logo-tag">Central Perk Edition</div>
+      <div class="logo-tag">Fan Made</div>
     </div>
 
     <!-- language toggle (small, top-right of home content) -->
     <div class="lang-toggle">
       <button class="lang-btn" data-lang="it" onclick="setLang('it')">🇮🇹</button>
       <button class="lang-btn" data-lang="en" onclick="setLang('en')">🇬🇧</button>
+    </div>
+
+    <!-- player bar -->
+    <div class="player-bar" id="player-bar">
+      <div class="player-id">
+        <span class="player-av" id="player-av">☕</span>
+        <div class="player-meta">
+          <span class="player-as" id="player-as">Stai giocando come</span>
+          <span class="player-name" id="player-name">Ospite</span>
+        </div>
+      </div>
+      <div class="player-actions">
+        <button class="pbar-btn" id="player-switch-btn" onclick="openPlayerModal()">⇄ <span id="player-switch-lbl">Cambia</span></button>
+        <button class="pbar-btn lb" onclick="openLeaderboard()" id="leaderboard-btn">🏆 <span id="leaderboard-lbl">Classifica</span></button>
+      </div>
     </div>
 
     <div class="quote-card">
@@ -75,6 +90,7 @@
         <h4 id="pool-title" style="font-size:9px;letter-spacing:3px;color:var(--muted);font-weight:700;text-transform:uppercase;margin-bottom:8px">Domande disponibili</h4>
         <div id="pool-stats"></div>
       </div>
+      <button class="propose-btn" id="propose-btn" onclick="openPropose()">✍️ <span id="propose-lbl">Proponi una domanda</span></button>
     </div>
 
     <p class="home-footer" id="home-footer"></p>
@@ -88,6 +104,7 @@
     <div class="diff-pill" id="g-diff-pill"></div>
     <div class="g-score" id="g-score">
       <span class="streak" id="streak" style="display:none">🔥 <span id="streak-n">0</span></span>
+      <span class="g-points" id="g-points">0 <small>pt</small></span>
       <span id="score-txt">0 / 0</span>
     </div>
   </div>
@@ -98,9 +115,11 @@
     </div>
     <div class="q-card">
       <div class="q-orn">☕</div>
+      <img class="q-image" id="q-image" alt="" style="display:none">
       <div class="q-text" id="q-text"></div>
       <div class="q-orn">☕</div>
     </div>
+    <div class="q-meta" id="q-meta"></div>
     <div class="answers" id="answers"></div>
     <div class="reveal" id="reveal"></div>
     <div class="g-foot">
@@ -121,6 +140,7 @@
       </div>
       <div class="res-pct" id="res-pct">0%</div>
       <div class="res-grade" id="res-grade"></div>
+      <div class="res-points" id="res-points"></div>
       <div class="res-stats">
         <div class="res-stat"><div class="v" id="res-correct" style="color:#5cba6e">0</div><div class="l" id="res-correct-l">Corrette</div></div>
         <div class="res-stat"><div class="v" id="res-wrong" style="color:#e0594d">0</div><div class="l" id="res-wrong-l">Errori</div></div>
@@ -150,6 +170,61 @@
   <source src="audio/theme.ogg" type="audio/ogg">
 </audio>
 
+<!-- ════════ PLAYER MODAL ════════ -->
+<div class="modal-bg" id="player-modal">
+  <div class="modal player-modal-box">
+    <h3 id="pm-title">Chi sta giocando?</h3>
+    <p class="pm-sub" id="pm-sub">Registrati per salvare i tuoi punteggi.</p>
+    <div class="pm-register">
+      <input type="text" id="pm-input" maxlength="16" placeholder="Scegli un nome…" autocomplete="off">
+      <button class="pm-go" id="pm-go" onclick="registerPlayer()">Registrati ▸</button>
+    </div>
+    <div class="pm-err" id="pm-err"></div>
+    <div class="pm-existing-wrap" id="pm-existing-wrap" style="display:none">
+      <h4 id="pm-existing-h">Giocatori salvati</h4>
+      <div class="pm-list" id="pm-list"></div>
+    </div>
+    <button class="pm-guest" id="pm-guest" onclick="playAsGuest()">Gioca come ospite</button>
+  </div>
+</div>
+
+<!-- ════════ LEADERBOARD MODAL ════════ -->
+<div class="modal-bg" id="lb-modal">
+  <div class="modal lb-box">
+    <h3 id="lb-title">🏆 Hall of Fame</h3>
+    <p class="pm-sub" id="lb-sub">I record di questo cabinato</p>
+    <div class="lb-list" id="lb-list"></div>
+    <button class="close-btn" id="lb-close" onclick="closeLeaderboard()">Chiudi</button>
+  </div>
+</div>
+
+<!-- ════════ PROPOSE A QUESTION ════════ -->
+<div class="modal-bg" id="propose-modal">
+  <div class="modal propose-box">
+    <h3 id="pr-title">Proponi una domanda</h3>
+    <p class="pm-sub" id="pr-sub">La tua proposta verrà inviata per email all'autore.</p>
+    <label class="pr-label" id="pr-l-q">Domanda</label>
+    <input type="text" id="pr-q" maxlength="200" placeholder="Es. In che stagione…?">
+    <label class="pr-label" id="pr-l-o">Opzioni (seleziona quella corretta)</label>
+    <div class="pr-opt"><input type="radio" name="pr-correct" value="0" checked><input type="text" id="pr-o0" maxlength="80" placeholder="Opzione A"></div>
+    <div class="pr-opt"><input type="radio" name="pr-correct" value="1"><input type="text" id="pr-o1" maxlength="80" placeholder="Opzione B"></div>
+    <div class="pr-opt"><input type="radio" name="pr-correct" value="2"><input type="text" id="pr-o2" maxlength="80" placeholder="Opzione C"></div>
+    <div class="pr-opt"><input type="radio" name="pr-correct" value="3"><input type="text" id="pr-o3" maxlength="80" placeholder="Opzione D"></div>
+    <div class="pr-row2">
+      <div><label class="pr-label" id="pr-l-d">Difficoltà</label>
+        <select id="pr-diff">
+          <option value="easy">Easy</option><option value="medium" selected>Medium</option>
+          <option value="hard">Hard</option><option value="expert">Expert</option><option value="maniac">MANIAC</option>
+        </select></div>
+      <div><label class="pr-label" id="pr-l-e">Episodio (facoltativo)</label>
+        <input type="text" id="pr-ep" maxlength="12" placeholder="es. S03"></div>
+    </div>
+    <div class="pm-err" id="pr-err"></div>
+    <button class="pm-go pr-send" id="pr-send" onclick="submitProposal()">📧 Invia proposta</button>
+    <button class="close-btn" id="pr-close" onclick="closePropose()">Chiudi</button>
+  </div>
+</div>
+
 <!-- ════════ DISCLAIMER ════════ -->
 <div class="modal-bg" id="modal">
   <div class="modal">
@@ -159,8 +234,8 @@
   </div>
 </div>
 
-<script src="data.js"></script>
-<script src="i18n.js"></script>
-<script src="app.js"></script>
+<script src="data.js?v=6"></script>
+<script src="i18n.js?v=6"></script>
+<script src="app.js?v=6"></script>
 </body>
 </html>
