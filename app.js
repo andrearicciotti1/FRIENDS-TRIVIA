@@ -62,6 +62,7 @@ function applyLang(){
   setText('home-h2', L.home_h2);
   setText('home-p', L.home_p);
   setText('pool-title', L.pool_title);
+  setText('propose-lbl', L.propose_btn);
   setHTML('home-footer', L.footer);
   // rebuild difficulty cards + pool (labels depend on lang)
   buildPool();
@@ -230,6 +231,62 @@ function openLeaderboard(){
 }
 function closeLeaderboard(){ document.getElementById('lb-modal').classList.remove('show'); }
 
+// ════════ REPORT / PROPOSE (via email) ════════
+const OWNER_EMAIL='andrearicciotti1@gmail.com';
+function mailto(subject,body){
+  window.location.href='mailto:'+OWNER_EMAIL+'?subject='+encodeURIComponent(subject)+'&body='+encodeURIComponent(body);
+}
+function reportQuestion(id){
+  const q=ALL_QUESTIONS.find(x=>x.id===id); if(!q)return;
+  const L=t(); const ql=qLoc(q);
+  const body=
+    L.report_intro+'\n\n'+
+    'ID: #'+id+'\n'+
+    'Difficoltà/Difficulty: '+q.difficulty+'\n'+
+    'Episodio/Episode: '+(q.episode||'-')+'\n'+
+    'Lingua/Language: '+LANG.toUpperCase()+'\n\n'+
+    (ql.question)+'\n'+
+    ql.options.map((o,i)=>String.fromCharCode(65+i)+') '+o+(o===ql.answer?'  ✓':'')).join('\n')+'\n\n'+
+    L.report_desc+'\n';
+  mailto('[Friends Trivia] Report #'+id, body);
+}
+function openPropose(){
+  const L=t();
+  setText('pr-title', L.propose_title);
+  setText('pr-sub', L.propose_sub);
+  setText('pr-l-q', L.pr_l_q);
+  setText('pr-l-o', L.pr_l_o);
+  setText('pr-l-d', L.pr_l_d);
+  setText('pr-l-e', L.pr_l_e);
+  setText('pr-send', L.pr_send);
+  setText('pr-close', L.close);
+  setText('pr-err','');
+  document.getElementById('pr-q').placeholder=L.pr_ph_q;
+  ['A','B','C','D'].forEach((lt,i)=>{const e=document.getElementById('pr-o'+i);if(e)e.placeholder=L.pr_ph_o(lt);});
+  document.getElementById('pr-ep').placeholder=L.pr_ph_e;
+  document.getElementById('propose-modal').classList.add('show');
+}
+function closePropose(){ document.getElementById('propose-modal').classList.remove('show'); }
+function submitProposal(){
+  const L=t();
+  const q=document.getElementById('pr-q').value.trim();
+  const opts=[0,1,2,3].map(i=>document.getElementById('pr-o'+i).value.trim());
+  if(!q || opts.some(o=>!o)){ setText('pr-err', L.pr_fill); return; }
+  const ci=parseInt((document.querySelector('input[name="pr-correct"]:checked')||{}).value||'0',10);
+  const diff=document.getElementById('pr-diff').value;
+  const ep=document.getElementById('pr-ep').value.trim();
+  const body=
+    L.pr_intro+'\n\n'+
+    'Domanda/Question: '+q+'\n'+
+    opts.map((o,i)=>String.fromCharCode(65+i)+') '+o+(i===ci?'  ✓ ('+L.base_points+')':'')).join('\n')+'\n\n'+
+    'Risposta corretta/Correct: '+opts[ci]+'\n'+
+    'Difficoltà/Difficulty: '+diff+'\n'+
+    'Episodio/Episode: '+(ep||'-')+'\n'+
+    'Lingua/Language: '+LANG.toUpperCase()+'\n';
+  mailto('[Friends Trivia] Proposta domanda / Question suggestion', body);
+  closePropose();
+}
+
 // ── BUILD UI ──
 function buildPool(){
   const pool=document.getElementById('pool-stats');if(!pool)return;
@@ -333,6 +390,17 @@ function renderQuestion(){
   document.getElementById('prog-fill').style.width=(state.idx/state.questions.length*100)+'%';
   updateScore();
   document.getElementById('q-text').textContent=ql.question;
+
+  // optional still/frame image
+  const imgEl=document.getElementById('q-image');
+  if(imgEl){
+    if(q.image){ imgEl.src=q.image; imgEl.style.display='block'; imgEl.onerror=()=>{imgEl.style.display='none';}; }
+    else { imgEl.style.display='none'; imgEl.removeAttribute('src'); }
+  }
+  // id badge + report button
+  const meta=document.getElementById('q-meta');
+  if(meta) meta.innerHTML=`<span class="q-id">#${q.id}</span>`+
+    `<button class="report-btn" onclick="reportQuestion(${q.id})">⚠ ${L.report}</button>`;
 
   const letters=['A','B','C','D'];
   const a=document.getElementById('answers');a.innerHTML='';

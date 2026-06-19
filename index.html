@@ -6,7 +6,7 @@
 <title>Friends Trivia — Fan Made</title>
 <meta name="description" content="Quiz a tema Friends. 700+ domande, 5 livelli di difficoltà. Fan project.">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%E2%98%95%3C/text%3E%3C/svg%3E">
-<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="style.css?v=3">
 </head>
 <body>
 <div class="grain"></div>
@@ -90,6 +90,7 @@
         <h4 id="pool-title" style="font-size:9px;letter-spacing:3px;color:var(--muted);font-weight:700;text-transform:uppercase;margin-bottom:8px">Domande disponibili</h4>
         <div id="pool-stats"></div>
       </div>
+      <button class="propose-btn" id="propose-btn" onclick="openPropose()">✍️ <span id="propose-lbl">Proponi una domanda</span></button>
     </div>
 
     <p class="home-footer" id="home-footer"></p>
@@ -114,9 +115,11 @@
     </div>
     <div class="q-card">
       <div class="q-orn">☕</div>
+      <img class="q-image" id="q-image" alt="" style="display:none">
       <div class="q-text" id="q-text"></div>
       <div class="q-orn">☕</div>
     </div>
+    <div class="q-meta" id="q-meta"></div>
     <div class="answers" id="answers"></div>
     <div class="reveal" id="reveal"></div>
     <div class="g-foot">
@@ -195,6 +198,33 @@
   </div>
 </div>
 
+<!-- ════════ PROPOSE A QUESTION ════════ -->
+<div class="modal-bg" id="propose-modal">
+  <div class="modal propose-box">
+    <h3 id="pr-title">Proponi una domanda</h3>
+    <p class="pm-sub" id="pr-sub">La tua proposta verrà inviata per email all'autore.</p>
+    <label class="pr-label" id="pr-l-q">Domanda</label>
+    <input type="text" id="pr-q" maxlength="200" placeholder="Es. In che stagione…?">
+    <label class="pr-label" id="pr-l-o">Opzioni (seleziona quella corretta)</label>
+    <div class="pr-opt"><input type="radio" name="pr-correct" value="0" checked><input type="text" id="pr-o0" maxlength="80" placeholder="Opzione A"></div>
+    <div class="pr-opt"><input type="radio" name="pr-correct" value="1"><input type="text" id="pr-o1" maxlength="80" placeholder="Opzione B"></div>
+    <div class="pr-opt"><input type="radio" name="pr-correct" value="2"><input type="text" id="pr-o2" maxlength="80" placeholder="Opzione C"></div>
+    <div class="pr-opt"><input type="radio" name="pr-correct" value="3"><input type="text" id="pr-o3" maxlength="80" placeholder="Opzione D"></div>
+    <div class="pr-row2">
+      <div><label class="pr-label" id="pr-l-d">Difficoltà</label>
+        <select id="pr-diff">
+          <option value="easy">Easy</option><option value="medium" selected>Medium</option>
+          <option value="hard">Hard</option><option value="expert">Expert</option><option value="maniac">MANIAC</option>
+        </select></div>
+      <div><label class="pr-label" id="pr-l-e">Episodio (facoltativo)</label>
+        <input type="text" id="pr-ep" maxlength="12" placeholder="es. S03"></div>
+    </div>
+    <div class="pm-err" id="pr-err"></div>
+    <button class="pm-go pr-send" id="pr-send" onclick="submitProposal()">📧 Invia proposta</button>
+    <button class="close-btn" id="pr-close" onclick="closePropose()">Chiudi</button>
+  </div>
+</div>
+
 <!-- ════════ DISCLAIMER ════════ -->
 <div class="modal-bg" id="modal">
   <div class="modal">
@@ -204,8 +234,8 @@
   </div>
 </div>
 
-<script src="data.js"></script>
-<script src="i18n.js"></script>
-<script src="app.js"></script>
+<script src="data.js?v=3"></script>
+<script src="i18n.js?v=3"></script>
+<script src="app.js?v=3"></script>
 </body>
 </html>

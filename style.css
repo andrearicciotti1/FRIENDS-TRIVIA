@@ -326,6 +326,44 @@ body::after{
 .audio-ctl:hover .audio-label{max-width:120px;padding-right:6px}
 .vol{width:60px;accent-color:var(--orange);cursor:pointer}
 
+/* ════════ QUESTION IMAGE (stills) + META ════════ */
+.q-image{
+  display:block;max-width:100%;max-height:300px;width:auto;margin:2px auto 12px;
+  border-radius:12px;border:3px solid var(--gold);box-shadow:0 8px 24px rgba(0,0,0,.45);object-fit:contain;
+}
+.q-meta{display:flex;align-items:center;justify-content:center;gap:12px;margin-top:-6px}
+.q-id{
+  font-family:ui-monospace,monospace;font-size:10.5px;font-weight:700;color:var(--muted);
+  background:rgba(0,0,0,.25);padding:3px 9px;border-radius:20px;letter-spacing:.5px;
+}
+.report-btn{
+  border:1px solid rgba(224,89,77,.35);background:rgba(224,89,77,.08);color:#e0917f;
+  cursor:pointer;font-family:'Libre Franklin';font-weight:600;font-size:11px;
+  padding:4px 11px;border-radius:20px;transition:background .15s;
+}
+.report-btn:hover{background:rgba(224,89,77,.2);color:#f0b5a8}
+
+/* ════════ PROPOSE BUTTON + MODAL ════════ */
+.propose-btn{
+  width:100%;margin-top:12px;padding:11px;border-radius:10px;cursor:pointer;
+  border:1.5px solid rgba(123,94,167,.45);background:rgba(123,94,167,.12);color:var(--cream);
+  font-family:'Libre Franklin';font-weight:700;font-size:13px;transition:background .15s;
+}
+.propose-btn:hover{background:rgba(123,94,167,.26)}
+.propose-box{max-width:480px;width:100%}
+.pr-label{display:block;font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);font-weight:700;margin:12px 0 5px}
+.propose-box input[type=text],.propose-box select{
+  width:100%;padding:10px 12px;border-radius:9px;border:1.5px solid rgba(224,122,43,.3);
+  background:rgba(0,0,0,.3);color:var(--cream);font-family:'Libre Franklin';font-size:14px;
+}
+.propose-box input[type=text]:focus,.propose-box select:focus{outline:none;border-color:var(--orange)}
+.pr-opt{display:flex;align-items:center;gap:9px;margin-bottom:7px}
+.pr-opt input[type=radio]{accent-color:var(--green);width:18px;height:18px;flex:0 0 18px;cursor:pointer}
+.pr-opt input[type=text]{flex:1}
+.pr-row2{display:flex;gap:12px;margin-top:4px}
+.pr-row2>div{flex:1}
+.pr-send{width:100%;margin-top:14px;padding:12px}
+
 /* ════════ DISCLAIMER MODAL ════════ */
 .modal-bg{position:fixed;inset:0;z-index:9700;background:rgba(0,0,0,.78);display:none;align-items:center;justify-content:center;padding:24px;backdrop-filter:blur(3px)}
 .modal-bg.show{display:flex}
@@ -342,6 +380,14 @@ body::after{
   .res-left{flex:none;border-right:none;border-bottom:1px solid rgba(224,122,43,.18);padding-bottom:24px;margin-bottom:20px}
   .res-right{padding-left:0}
   .reveal-img{width:90px;height:68px}
+  /* compact audio control so it never sits on top of the Next button */
+  .audio-ctl{bottom:10px;right:10px;padding:5px 6px;gap:5px}
+  .audio-ctl .vol{display:none}
+  .audio-label{display:none}
+  .audio-btn{width:40px;height:40px;font-size:15px}
+  /* leave room at the bottom of the game so the floating control clears the footer */
+  .g-body{padding-bottom:78px}
+  .q-image{max-height:210px}
 }
 
 /* ════════ ENTER OVERLAY ════════ */
