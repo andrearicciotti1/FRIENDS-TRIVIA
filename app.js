@@ -34,14 +34,12 @@ let state = {
 
 // ── EPISODE CITATION ──
 function episodeCitation(code){
-  if(EP_TITLES[code]) return { tag:code, title:EP_TITLES[code] };
-  if(SEASON_LABELS[code]){
-    // SEASON_LABELS like "S01" -> "Stagione 1"/"Season 1" via i18n number
-    const n=parseInt(code.replace('S',''),10);
-    return { tag:code, title:t().season(n) };
-  }
-  if(META_LABELS[code]) return { tag:'', title:t().meta[code]||META_LABELS[code] };
-  return { tag:code||'', title:'' };
+  if(!code) return { tag:'', title:'' };
+  const L=t();
+  if(L.meta[code]) return { tag:'', title:L.meta[code] };
+  const seasonOnly=code.match(/^S(\d{2})$/);
+  if(seasonOnly) return { tag:code, title:L.season(parseInt(seasonOnly[1],10)) };
+  return { tag:code, title:'' };
 }
 
 // ════════ LANGUAGE ════════
