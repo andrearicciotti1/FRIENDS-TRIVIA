@@ -433,7 +433,7 @@ function renderQuestion(){
 
 function startTimer(sec){
   clearInterval(state.timerInt);
-  state.timerVal=sec;updateTimer();
+  state.timerVal=sec;state.timerMax=sec;updateTimer();
   state.timerInt=setInterval(()=>{
     state.timerVal-=0.1;updateTimer();
     if(state.timerVal<=0){clearInterval(state.timerInt);if(!state.answered)skip();}
@@ -441,7 +441,14 @@ function startTimer(sec){
 }
 function updateTimer(){
   const el=document.getElementById('timer');const v=Math.max(0,Math.ceil(state.timerVal));
-  el.textContent=v+'s';el.className='timer'+(v<=5?' warn':'');
+  const warn=v<=5;
+  el.textContent=v+'s';el.className='timer'+(warn?' warn':'');
+  const fill=document.getElementById('timer-fill');
+  if(fill){
+    const pct=Math.max(0,state.timerVal/state.timerMax*100);
+    fill.style.width=pct+'%';
+    fill.className='timer-fill'+(warn?' warn':'');
+  }
 }
 
 function answer(idx){

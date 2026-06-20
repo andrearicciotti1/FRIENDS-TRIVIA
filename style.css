@@ -197,6 +197,11 @@ body::after{
 .timer.warn{color:#ff4d4d;animation:pulse .5s infinite}
 @keyframes pulse{50%{opacity:.5}}
 
+.timer-bar{height:10px;background:rgba(255,255,255,.08);border-radius:5px;overflow:hidden;border:1px solid rgba(255,255,255,.1)}
+.timer-fill{height:100%;border-radius:5px;width:100%;background:#4a9e5c;transition:width .1s linear,background-color .3s ease}
+.timer-fill.warn{background:#ff4d4d;animation:timerPulse .5s infinite}
+@keyframes timerPulse{50%{opacity:.55}}
+
 .q-card{
   background:linear-gradient(150deg,var(--surface),var(--surface-l));
   border:1.5px solid rgba(224,122,43,.3);border-radius:var(--r);
