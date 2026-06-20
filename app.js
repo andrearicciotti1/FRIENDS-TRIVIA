@@ -3,11 +3,11 @@
 ════════════════════════════════════════════ */
 
 const DIFFICULTIES = [
-  { id:'easy',   label:'Easy',   emoji:'☕', color:'#4a9e5c', light:'rgba(74,158,92,.16)',  time:20, count:15, points:10 },
-  { id:'medium', label:'Medium', emoji:'🛋️', color:'#e07a2b', light:'rgba(224,122,43,.16)', time:18, count:15, points:15 },
+  { id:'easy',   label:'Easy',   emoji:'☕', color:'#4a9e5c', light:'rgba(74,158,92,.16)',  time:15, count:15, points:10 },
+  { id:'medium', label:'Medium', emoji:'🛋️', color:'#e07a2b', light:'rgba(224,122,43,.16)', time:15, count:15, points:15 },
   { id:'hard',   label:'Hard',   emoji:'🦎', color:'#c0392b', light:'rgba(192,57,43,.16)',  time:15, count:12, points:25 },
-  { id:'expert', label:'Expert', emoji:'📺', color:'#7b5ea7', light:'rgba(123,94,167,.16)', time:12, count:10, points:40 },
-  { id:'maniac', label:'MANIAC', emoji:'💡', color:'#caa43a', light:'rgba(202,164,58,.18)', time:10, count:10, points:60 },
+  { id:'expert', label:'Expert', emoji:'📺', color:'#7b5ea7', light:'rgba(123,94,167,.16)', time:15, count:10, points:40 },
+  { id:'maniac', label:'MANIAC', emoji:'💡', color:'#caa43a', light:'rgba(202,164,58,.18)', time:15, count:10, points:60 },
 ];
 
 // Return question text/options/answer in the current language
