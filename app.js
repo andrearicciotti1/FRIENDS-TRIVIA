@@ -18,6 +18,20 @@ function qLoc(q){
   return { question:q.question, options:q.options, answer:q.answer };
 }
 
+// Randomize answer order (same permutation for EN+IT) so the correct
+// answer isn't always in the same position; returns a shuffled copy.
+function shuffleOptions(q){
+  const order=[0,1,2,3];
+  for(let i=order.length-1;i>0;i--){
+    const j=Math.floor(Math.random()*(i+1));
+    [order[i],order[j]]=[order[j],order[i]];
+  }
+  const copy={...q};
+  copy.options=order.map(i=>q.options[i]);
+  if(q.options_it) copy.options_it=order.map(i=>q.options_it[i]);
+  return copy;
+}
+
 // Reaction images per outcome (quips come from i18n)
 const REACT_IMG = {
   correct:['good-job.jpg','oh-you.jpg','how-you-doin.gif'],
@@ -360,9 +374,9 @@ function startGame(){
       const fill=shuf(pool.filter(q=>seen.has(q.id))).slice(0,d.count-chosen.length);
       chosen=chosen.concat(fill);
     }
-    state.questions=chosen;
+    state.questions=chosen.map(shuffleOptions);
   }else{
-    state.questions=shuf(pool).slice(0,d.count);
+    state.questions=shuf(pool).slice(0,d.count).map(shuffleOptions);
   }
 
   state.idx=0;state.score=0;state.streak=0;state.maxStreak=0;state.wrong=[];state.basePoints=0;
